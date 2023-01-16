@@ -23,16 +23,18 @@ contract Escrow {
 
     //constructor for setting these with contract deployment
     constructor(
-        address _lender,
-        address _inspector,
+        address _nftAddress,
         address payable _seller,
-        address _nftAddress){
-
-        lender = _lender;
-        inspector = _inspector;
-        seller = _seller;
+        address _inspector,
+        address _lender
+        
+        ){
+        
         nftAddress = _nftAddress;
-
+        seller = _seller;
+        inspector = _inspector;
+        lender = _lender;
+        
     }
 
 }
