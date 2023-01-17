@@ -113,4 +113,9 @@ describe('Escrow', () => {
         })
     })
 
+    describe("deposit earnesst", async()=>{
+        
+        it("ensure the contract has escrow amount",)
+    })
+
 })
