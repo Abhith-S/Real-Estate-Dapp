@@ -113,9 +113,20 @@ describe('Escrow', () => {
         })
     })
 
-    describe("deposit earnesst", async()=>{
+    describe("Deposit earnest", async()=>{
         
-        it("ensure the contract has escrow amount",)
+        it("ensure the contract has escrow amount",async()=>{
+            let transaction = await escrow.connect(buyer).depositEarnest(1, {value: tokens(5)});
+            await transaction.wait();
+
+            expect(await escrow.getBalance()).to.be.equal(tokens(5));
+        })
+
+        it("checks if only buyer can call depositEarnest()", async()=>{
+            await expect(escrow.connect(seller).depositEarnest(1)).to.be.revertedWith('only buyer can call this function');
+            await expect(escrow.connect(inspector).depositEarnest(1)).to.be.revertedWith('only buyer can call this function');
+            await expect(escrow.connect(lender).depositEarnest(1)).to.be.revertedWith('only buyer can call this function');
+        })
     })
 
 })

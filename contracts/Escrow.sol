@@ -38,7 +38,7 @@ contract Escrow {
 
     //only buyer can do this
     modifier onlyBuyer(uint _nftID){
-        require(msg.sender == buyer[_nftID]);
+        require(msg.sender == buyer[_nftID], "only buyer can call this function");
         _;
     }
 
