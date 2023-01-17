@@ -43,6 +43,16 @@ describe('Escrow', () => {
             inspector.address,
             lender.address 
         );
+
+        //before the nft can be transfered from seller account he has to approve it
+        //so we call the approve function from erc721 contract
+        transaction = await realEstate.connect(seller).approve(escrow.address, 1);
+        await transaction.wait();
+
+        //calling the list()
+        transaction = await escrow.connect(seller).list(1, tokens(10), tokens(5), buyer.address);
+        await transaction.wait();
+
     })
 
     it("returns the nft address", async ()=>{
@@ -51,25 +61,56 @@ describe('Escrow', () => {
         //if the nftAddress variable holds the nft address
         //here nftAddress() is not a function we defined but a public variable in our contract
         //the variable is having a view function 
-        expect(await escrow.nftAddress()).to.equal(realEstate.address);
+        expect(await escrow.nftAddress()).to.be.equal(realEstate.address);
     })
 
     it("returns the seller", async ()=>{
 
         //check if the seller variable holds the seller address
-        expect(await escrow.seller()).to.equal(seller.address);
+        expect(await escrow.seller()).to.be.equal(seller.address);
     })
 
     it("returns the inspector", async ()=>{
 
         //check if the inspector variable holds the seller address
-        expect(await escrow.inspector()).to.equal(inspector.address);
+        expect(await escrow.inspector()).to.be.equal(inspector.address);
     })
 
     it("returns the lender", async ()=>{
 
         //check if the lender variable holds the seller address
-        expect(await escrow.lender()).to.equal(lender.address);
+        expect(await escrow.lender()).to.be.equal(lender.address);
+    })
+
+    describe("Listing", async ()=>{
+
+        //if the nft was transfered then the new owner will be the Escrow contract
+        it("updates the owner", async ()=>{
+            expect(await realEstate.ownerOf(1)).to.be.equal(escrow.address);
+        })
+
+        //check if the nft status changed
+        it("updates the nft listing status", async ()=>{
+            expect(await escrow.isListed(1)).to.be.equal(true);
+        })
+
+        it("gets the purchase price", async()=>{
+            expect(await escrow.purchasePrice(1)).to.be.equal(tokens(10));
+        })
+
+        it("returns the escrow amount", async()=>{
+            expect(await escrow.escrowAmount(1)).to.be.equal(tokens(5));
+        })
+
+        it("returns the buyer address", async()=>{
+            expect(await escrow.buyer(1)).to.be.equal(buyer.address);
+        })
+
+        it("checks if only seller can call list()", async()=>{
+            await expect(escrow.connect(buyer).list(1, tokens(10), tokens(5), buyer.address)).to.be.revertedWith('only seller can call this function');
+            await expect(escrow.connect(inspector).list(1, tokens(10), tokens(5), buyer.address)).to.be.revertedWith('only seller can call this function');
+            await expect(escrow.connect(lender).list(1, tokens(10), tokens(5), buyer.address)).to.be.revertedWith('only seller can call this function');
+        })
     })
 
 })
