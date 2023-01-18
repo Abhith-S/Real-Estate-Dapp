@@ -129,7 +129,7 @@ describe('Escrow', () => {
         })
     })
 
-    describe("Inspection status", async()=>{
+    describe("Inspection", async()=>{
         
         it("updates inspection status",async()=>{
             let transaction = await escrow.connect(inspector).updateInspectionPassed(1, true);
@@ -146,17 +146,69 @@ describe('Escrow', () => {
     describe("Approval", async()=>{
         
         it("approves sale",async()=>{
+
+            //seller approves
             let transaction = await escrow.connect(seller).approveSale(1);
             await transaction.wait();
             expect(await escrow.saleApproved(1,seller.address)).to.be.equal(true);
 
+            //buyer approves
             transaction = await escrow.connect(buyer).approveSale(1);
             await transaction.wait();
             expect(await escrow.saleApproved(1,buyer.address)).to.be.equal(true);
 
+            //lender approves
             transaction = await escrow.connect(lender).approveSale(1);
             await transaction.wait();
             expect(await escrow.saleApproved(1,lender.address)).to.be.equal(true);
+        })
+    })
+
+    describe("Sale", async()=>{
+
+        beforeEach(async ()=>{
+
+            //deposot earnest
+            let transaction = await escrow.connect(buyer).depositEarnest(1, {value: tokens(5)});
+            await transaction.wait();
+
+            //pass inspection
+            transaction = await escrow.connect(inspector).updateInspectionPassed(1, true);
+            await transaction.wait();
+
+            //seller approves
+            transaction = await escrow.connect(seller).approveSale(1);
+            await transaction.wait();
+            
+            //buyer approves
+            transaction = await escrow.connect(buyer).approveSale(1);
+            await transaction.wait();
+            
+            //lender approves
+            transaction = await escrow.connect(lender).approveSale(1);
+            await transaction.wait();
+            
+            //lender sends balance money
+            //sendTransaction() from hardhat to send money
+            await lender.sendTransaction({to: escrow.address, value: tokens(5)});
+
+            //ensure the escrow contract has enough funds
+            expect(await escrow.getBalance()).to.be.equal(tokens(10));
+
+            //finalize sale
+            //transfer the nft and send money to seller
+            transaction = await escrow.connect(seller).finalizeSale(1);
+            await transaction.wait();
+
+        })
+        
+
+        it("updates ownership",async()=>{
+            expect(await realEstate.ownerOf(1)).to.be.equal(buyer.address);
+        })
+
+        it("updates the contract balance", async()=>{
+            expect(await escrow.getBalance()).to.be.equal(0);
         })
     })
 
