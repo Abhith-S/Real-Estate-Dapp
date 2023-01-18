@@ -129,4 +129,18 @@ describe('Escrow', () => {
         })
     })
 
+    describe("Inspection status", async()=>{
+        
+        it("updates inspection status",async()=>{
+            let transaction = await escrow.connect(inspector).updateInspectionPassed(1, true);
+            await transaction.wait();
+        })
+
+        it("checks if only inspector can call updateInspectionPassed()", async()=>{
+            await expect(escrow.connect(seller).updateInspectionPassed(1, true)).to.be.revertedWith('only inspector can call this function');
+            await expect(escrow.connect(buyer).updateInspectionPassed(1, true)).to.be.revertedWith('only inspector can call this function');
+            await expect(escrow.connect(lender).updateInspectionPassed(1, true)).to.be.revertedWith('only inspector can call this function');
+        })
+    })
+
 })

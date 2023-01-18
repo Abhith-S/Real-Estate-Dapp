@@ -30,6 +30,9 @@ contract Escrow {
     mapping(uint => uint) public escrowAmount;
     mapping(uint => address) public buyer;
 
+    //mapping for inspection status
+    mapping(uint => bool) public inspectionPassed;
+
     //only seller can do this
     modifier onlySeller(){
         require(msg.sender == seller, "only seller can call this function");
@@ -44,6 +47,12 @@ contract Escrow {
 
     //make the contract payable
     receive() external payable{}
+
+    //only inpsector can do this
+    modifier onlyInspector(){
+        require(msg.sender == inspector,"only inspector can call this function");
+        _;
+    }
 
     //constructor for setting these with contract deployment
     constructor(
@@ -90,6 +99,11 @@ contract Escrow {
     //function get contract balacnce
     function getBalance()public view returns(uint){
         return address(this).balance;
+    }
+
+    //update inspection status, by only ispector
+    function updateInspectionPassed(uint _nftID, bool _isPassed)public onlyInspector{
+        inspectionPassed[_nftID] = _isPassed;
     }
 
 }
