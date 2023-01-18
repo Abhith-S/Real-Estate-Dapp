@@ -142,6 +142,7 @@ contract Escrow {
     //function to cancel the sale
     function cancelSale(uint _nftID)public{
 
+        //if insection failed transfer funds to buyer else send to seller
         if(inspectionPassed[_nftID] == false){
             payable(buyer[_nftID]).transfer(address(this).balance);
         }
