@@ -33,6 +33,9 @@ contract Escrow {
     //mapping for inspection status
     mapping(uint => bool) public inspectionPassed;
 
+    //mapping for each actor approving sale
+    mapping(uint => mapping(address => bool)) public saleApproved;
+
     //only seller can do this
     modifier onlySeller(){
         require(msg.sender == seller, "only seller can call this function");
@@ -106,4 +109,8 @@ contract Escrow {
         inspectionPassed[_nftID] = _isPassed;
     }
 
+    //approve sale
+    function approveSale(uint _nftID)public{
+        saleApproved[_nftID][msg.sender] = true;
+    }
 }
