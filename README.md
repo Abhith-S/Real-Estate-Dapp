@@ -1,5 +1,7 @@
 # Real Estate NFT DApp
 
+Note : the dapp is not completed yet, I'm updating the repo every day.
+
 ## Technology Stack & Tools
 
 - Solidity (Writing Smart Contracts & Tests)
