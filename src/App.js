@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+
+//ethers library
 import { ethers } from 'ethers';
 
 // Components
@@ -10,10 +12,32 @@ import Home from './components/Home';
 import RealEstate from './abis/RealEstate.json'
 import Escrow from './abis/Escrow.json'
 
-// Config
+// Config.json file that has the contract addresses
 import config from './config.json';
 
 function App() {
+
+  //to store states of accounts
+  const [account, setAccount] = useState(null)
+
+  //get the blockchain data
+  const loadBlockchainData = async()=>{
+    //get the data from metamask
+    //window.ethereum is injected by metamask to the browser
+    //ita allows us to access blockchain
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const accounts = await window.ethereum.request({method : "eth_requestAccounts"});
+
+    setAccount(accounts[0])
+
+    console.log(accounts[0])
+  }
+
+  //useEffect hook runs a fn everytime a render occurs
+  //this is usually used to fetch data and all everytime site loads
+  useEffect( ()=>{
+    loadBlockchainData()},
+    [])
 
   return (
     <div>
