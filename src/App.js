@@ -22,15 +22,12 @@ function App() {
 
   //get the blockchain data
   const loadBlockchainData = async()=>{
+
     //get the data from metamask
     //window.ethereum is injected by metamask to the browser
     //ita allows us to access blockchain
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const accounts = await window.ethereum.request({method : "eth_requestAccounts"});
 
-    setAccount(accounts[0])
-
-    console.log(accounts[0])
   }
 
   //useEffect hook runs a fn everytime a render occurs
@@ -40,7 +37,10 @@ function App() {
     [])
 
   return (
+    
     <div>
+
+      <Navigation account={account} setAccount = {setAccount}/>
 
       <div className='cards__section'>
 
