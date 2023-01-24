@@ -26,7 +26,13 @@ function App() {
   const [escrow, setEscrow] = useState(null);
 
   //save homes
-  const [homes , setHomes] = useState([]);
+  const [homes, setHomes] = useState([]);
+
+  //hook to set individual homes
+  const [home, setHome] = useState({});
+
+  //for toggle
+  const [toggle, setToggle] = useState(false);
 
   //get the blockchain data
   const loadBlockchainData = async () => {
@@ -36,17 +42,22 @@ function App() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     //set the provider here
-    setProvider(provider)
+    setProvider(provider);
 
     //get the network
-    const network = await provider.getNetwork()
+    const network = await provider.getNetwork();
 
     //get the javascript version of realEstate contract
     //the config file has the address of contract and the file is imported as 'config'
     //network.chainId will return 31337 which is the same as the one in config file
     //from that file the contract address is  taken
     //"RealEstate " is the abi of realestate contract imported here
-    const realEstate = new ethers.Contract(config[network.chainId].realEstate.address, RealEstate, provider);
+    const realEstate = new ethers.Contract(
+      config[network.chainId].realEstate.address,
+      RealEstate,
+      provider
+    );
+    // console.log(realEstate)
 
     //get the total supply of homes
     const totalSupply = await realEstate.totalSupply();
@@ -55,22 +66,24 @@ function App() {
     const homes = [];
 
     //loop through the mapping which stores nft and take each home
-    for(let i = 1; i <= totalSupply; i++){
+    for (var i = 1; i <= totalSupply; i++) {
       const uri = await realEstate.tokenURI(i);
       const response = await fetch(uri);
       const metadata = await response.json();
       homes.push(metadata);
     }
 
-    setHomes(homes)
+    setHomes(homes);
 
-    console.log(homes);
+    //console.log(homes);
 
-    
     //load the js version of escrow contrac
-    const escrow = new ethers.Contract(config[network.chainId].escrow.address, Escrow, provider);
-    setEscrow(escrow)
-
+    const escrow = new ethers.Contract(
+      config[network.chainId].escrow.address,
+      Escrow,
+      provider
+    );
+    setEscrow(escrow);
   };
 
   //useEffect hook runs a fn everytime a render occurs
@@ -79,6 +92,15 @@ function App() {
     loadBlockchainData();
   }, []);
 
+  //to pop up the homes on click
+  const togglePop = (home) => {
+    //console.log(home)
+
+    setHome(home);
+
+    //implement toggle feature
+    toggle ? setToggle(false) : setToggle(true);
+  };
   return (
     <div>
       <Navigation account={account} setAccount={setAccount} />
@@ -92,25 +114,35 @@ function App() {
 
         <div className="cards">
           {homes.map((home, index) => (
-
-          
-          <div className="card" key={index}>
-            <div className="card__image">
-              <img src="" alt="Home" />
+            <div className="card" key={index} onClick={() => togglePop(home)}>
+              <div className="card__image">
+                <img src={home.image} alt="Home" />
+              </div>
+              <div className="card__info">
+                <h4>{home.attributes[0].value}</h4>
+                <p>
+                  <strong>{home.attributes[2].value}</strong> beds|
+                  <strong>{home.attributes[3].value}</strong> baths|
+                  <strong>{home.attributes[4].value}</strong> sqft
+                </p>
+                <p>{home.address}</p>
+              </div>
             </div>
-            <div className="card__info">
-              <h4>1 ETH</h4>
-              <p>
-                <strong>1</strong> beds|
-                <strong>2</strong> baths|
-                <strong>3</strong> sqft
-              </p>
-              <p>1234 Elm street</p>
-            </div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
+
+      {/* check to see if toggle is active */}
+      {toggle && (
+        // render the home component
+        //pass the values from the conponent
+        <Home
+          home={home}
+          provider={provider}
+          escrow={escrow}
+          togglePop={togglePop}
+        />
+      )}
     </div>
   );
 }

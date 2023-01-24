@@ -37,7 +37,7 @@ const Navigation = ({ account, setAccount }) => {
 
       <div className="nav__brand">
         <img src={logo} alt="Logo" />
-        <h1>Millow</h1>
+        <h1>RealEstate</h1>
       </div>
 
       {/* we wamt a button with a condition that is account is connected then show it
