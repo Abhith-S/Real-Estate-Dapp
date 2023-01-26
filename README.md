@@ -9,6 +9,7 @@ Note : the Dapp frontend is not completed yet, I'm updating the repo every day.
 - [Hardhat](https://hardhat.org/) (Development Framework)
 - [Ethers.js](https://docs.ethers.io/v5/) (Blockchain Interaction)
 - [React.js](https://reactjs.org/) (Frontend Framework)
+- [IPFS](https://ipfs.tech/) (Decentralized Storage)
 
 ## Requirements For Initial Setup
 - Install [NodeJS](https://nodejs.org/en/)
