@@ -84,6 +84,15 @@ function App() {
       provider
     );
     setEscrow(escrow);
+
+    //change and update if we change accounts
+    window.ethereum.on("accountsChanged", async () => {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const account = ethers.utils.getAddress(accounts[0]);
+      setAccount(account);
+    });
   };
 
   //useEffect hook runs a fn everytime a render occurs
@@ -139,6 +148,7 @@ function App() {
         <Home
           home={home}
           provider={provider}
+          account={account}
           escrow={escrow}
           togglePop={togglePop}
         />
